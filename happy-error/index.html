@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Error? — Built-in AI Semantic Triage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+
+    <!-- Top App Header -->
+    <header class="app-header">
+      <div class="brand-group">
+        <h1 class="brand-title">
+          <span>Happy Error</span>
+        </h1>
+      </div>
+
+      <!-- Status Indicator Pill -->
+      <div id="aiStatusPill" class="status-pill unsupported" title="Click to view Chrome Built-in AI requirements">
+        <span class="status-dot"></span>
+        <span id="aiStatusText">Checking Chrome AI...</span>
+      </div>
+    </header>
+
+    <!-- Presets Toolbar -->
+    <section class="presets-section">
+      <div class="presets-label">Select Demo Scenario</div>
+      <div class="presets-grid" id="presetsGrid">
+        <!-- Injected dynamically from scenarios.js -->
+      </div>
+    </section>
+
+    <!-- Main Split Workspace -->
+    <main class="workspace-grid">
+
+      <!-- Left Column: Input & Raw Stream Inspector -->
+      <div class="pane">
+
+        <!-- Input Box -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📝 Input Message / Payload</span>
+            <span class="char-count" id="charCount">0 chars</span>
+          </div>
+
+          <div class="input-group">
+            <textarea
+              id="messageInput"
+              class="message-textarea"
+              placeholder="Type or paste an application response message here..."
+              spellcheck="false"
+            ></textarea>
+
+            <div class="controls-row">
+              <button id="clearBtn" class="action-btn" style="display: none;">Clear</button>
+              <div style="flex: 1;"></div>
+              <button id="analyzeBtn" class="btn-primary">
+                <span>⚡ Analyze Intent</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Stream Inspector -->
+        <div class="terminal-card">
+          <div class="terminal-topbar">
+            <div class="terminal-tabs">
+              <button class="terminal-tab active" id="tabStream" data-tab="stream">⚡ Live Stream</button>
+              <button class="terminal-tab" id="tabJson" data-tab="json">📦 Formatted JSON</button>
+              <button class="terminal-tab" id="tabPrompt" data-tab="prompt">📜 Prompt</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="terminal-metric" id="terminalMetric"></span>
+              <div class="terminal-badge" id="terminalStatusBadge">
+                <span class="terminal-status-dot"></span>
+                <span id="terminalStatusText">STREAM IDLE</span>
+              </div>
+              <button id="copyJsonBtn" class="action-btn" style="font-size: 0.75rem; padding: 4px 8px;" disabled>
+                📋 Copy
+              </button>
+            </div>
+          </div>
+          <div class="terminal-content" id="terminalOutput">
+            <span style="color: var(--text-muted);">// Raw token stream from Gemini Nano will appear here in real time...</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Visual UX Result Card -->
+      <div class="pane">
+        <div class="card outcome-card" id="outcomeCard">
+
+          <div class="card-header">
+            <span class="card-title">✨ Interpreted User Experience</span>
+          </div>
+
+          <!-- Empty State -->
+          <div class="outcome-empty" id="outcomeEmpty">
+            <div class="empty-icon">🎯</div>
+            <div class="empty-title">Ready for Semantic Triage</div>
+            <div class="empty-hint">Pick a preset scenario above or paste a message, then click <strong>Analyze Intent</strong>.</div>
+          </div>
+
+          <!-- Loading Shimmer State -->
+          <div class="outcome-loading" id="outcomeLoading">
+            <div class="spinner"></div>
+            <div style="font-weight: 700; color: var(--text-primary);">Gemini Nano is analyzing payload...</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);" id="downloadProgressText">Running on-device prompt session</div>
+          </div>
+
+          <!-- Rendered Structured Result -->
+          <div class="result-content" id="resultContent">
+
+            <!-- Deceptive Success Warning Banner -->
+            <div class="deceptive-banner" id="deceptiveBanner">
+              <span class="alert-icon">🎭</span>
+              <span>DECEPTIVE SUCCESS DETECTED — Semantic failure disguised as positive outcome</span>
+            </div>
+
+            <!-- Status Badge Row -->
+            <div class="outcome-badge-row">
+              <div class="outcome-pill success" id="statusPill">
+                <span id="statusIcon">🟢</span>
+                <span id="statusLabel">SUCCESS</span>
+              </div>
+            </div>
+
+            <!-- Headline -->
+            <h2 class="headline-text" id="headlineText">Headline goes here</h2>
+
+            <!-- Plain-English Explanation -->
+            <p class="explanation-text" id="explanationText">Explanation goes here</p>
+
+            <!-- Actionable Next Steps / Smart Cards -->
+            <div class="actions-section" id="actionsSection">
+              <div class="actions-header">
+                <span>⚡ Actionable Next Steps</span>
+              </div>
+              <div class="actions-list" id="actionsList">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast Popup -->
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <!-- Help & Chrome Flags Modal -->
+  <div class="modal-backdrop" id="flagsModal">
+    <div class="modal-content">
+      <h3 class="modal-title">Enable Chrome Built-in AI</h3>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);">
+        This demo uses Chrome's native Prompt API (Gemini Nano) running 100% locally on your machine.
+      </p>
+
+      <div class="flag-step">
+        <strong>1. Enable Prompt API in <code>chrome://flags</code>:</strong>
+        <div class="flag-code">chrome://flags/#prompt-api-for-gemini-nano</div>
+        <span>Set to: <strong>Enabled</strong></span>
+      </div>
+
+      <div class="flag-step">
+        <strong>2. Look for Optimization Guide (if present):</strong>
+        <div class="flag-code">chrome://flags/#optimization-guide-on-device-model</div>
+        <span>Search for <em>"optimization guide"</em> in flags and set to <strong>Enabled BypassPerfRequirement</strong>. <em>(If missing in your Canary build, Chrome enables this automatically when Prompt API is on.)</em></span>
+      </div>
+
+      <div class="flag-step">
+        <strong>3. Relaunch Chrome & Verify Component:</strong>
+        <div class="flag-code">chrome://components</div>
+        <span>Look for <strong>Optimization Guide On Device Model</strong> and click <strong>"Check for update"</strong>.</span>
+      </div>
+
+      <div class="flag-step">
+        <strong>4. Quick Console Test:</strong>
+        <span>Open DevTools (F12) and run: <code style="color: #38bdf8;">await (window.ai?.languageModel || ai.languageModel)?.availability()</code></span>
+      </div>
+
+      <button id="closeModalBtn" class="btn-primary" style="align-self: flex-end; margin-top: 8px;">
+        Got it
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
