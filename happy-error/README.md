@@ -17,30 +17,13 @@ Using Chrome's native **Gemini Nano Prompt API**, the client can:
 
 ---
 
-## 🚀 How to Run Locally (Quick Web Server Reminders)
+## 🌐 Live Demo
 
-Because this project uses native ES Modules (`import`/`export`), it must be served over `http://` or `localhost` (browsers block module imports over `file://` URLs). There are **zero build steps** and no dependencies to install.
+You can try the demo directly on GitHub Pages without cloning or running a local server:
 
-Pick any of these one-liners from the `happy-error` directory:
+👉 **[https://brycehowitson.github.io/ux-of-ai/happy-error/](https://brycehowitson.github.io/ux-of-ai/happy-error/)**
 
-```bash
-cd happy-error
-
-# Option 1: Python 3 (Most Common)
-python3 -m http.server 8000
-
-# Option 2: Node / npx (serve or http-server)
-npx serve .
-# or: npx http-server -p 8000
-
-# Option 3: PHP built-in server
-php -S localhost:8000
-
-# Option 4: Ruby built-in server
-ruby -run -ehttpd . -p8000
-```
-
-Then open **`http://localhost:8000`** in **Chrome Canary / Dev**.
+> **Note**: Open in **Chrome Canary / Dev** (or a supported Chrome build) with Chrome Built-in AI flags enabled (see instructions below).
 
 ---
 
